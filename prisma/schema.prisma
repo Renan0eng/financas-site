@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Esteira {
+  id           String     @id @default(uuid())
+  data         DateTime
+  valor        Float
+  descricao    String
+  origem       String
+  classificado Boolean    @default(false)
+  criadoEm     DateTime   @default(now())
+  lancamento   Lancamento? @relation(fields: [lancamentoId], references: [id])
+  lancamentoId String?     @unique
+}
+
+model Lancamento {
+  id          String   @id @default(uuid())
+  data        DateTime
+  valor       Float
+  descricao   String
+  origem      String   
+  criadoEm    DateTime @default(now())
+  classificacao Classificacao? @relation(fields: [classificacaoId], references: [id])
+  classificacaoId String?
+  recorrente Boolean @default(false) 
+  destaque   Boolean @default(false)
+  destaqueDescricao String? 
+  esteira    Esteira?
+}
+
+model Classificacao {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?
+  criadoEm    DateTime @default(now())
+  lancamentos Lancamento[]
+}
