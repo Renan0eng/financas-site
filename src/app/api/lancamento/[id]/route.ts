@@ -1,21 +1,24 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+type Context = {
+  params: { id: string }
+}
+
+export async function DELETE(_: NextRequest, { params }: Context) {
   await prisma.lancamento.delete({ where: { id: params.id } })
   return NextResponse.json({ ok: true })
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: Context) {
   const body = await req.json()
-  console.log("Atualizando lançamento:", params.id, body);
   await prisma.lancamento.update({
     where: { id: params.id },
     data: {
       descricao: body.descricao,
       valor: body.valor,
-      origem: body.origem
-    }
+      origem: body.origem,
+    },
   })
   return NextResponse.json({ ok: true })
 }
