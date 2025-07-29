@@ -1,14 +1,14 @@
 "use client"
 
+import SelectClassificacao from "@/components/select-classificacao"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatarDataBr } from "@/lib/utils"
-import { Classificacao, Esteira } from "@prisma/client"
+import { Esteira } from "@prisma/client"
 import { Upload } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -17,15 +17,11 @@ import { useEffect, useState } from "react"
 
 export default function EsteiraPage() {
     const [lancamentos, setLancamentos] = useState<Esteira[]>([])
-    const [classificacoes, setClassificacoes] = useState<Classificacao[]>([])
     const [selecionado, setSelecionado] = useState<Esteira | null>(null)
     const [classificacao, setClassificacao] = useState("")
     const [recorrente, setRecorrente] = useState(false)
     const [warn, setWarn] = useState(false)
     const [warnDesc, setWarnDesc] = useState("")
-    const [data, setData] = useState("")
-    const [descricao, setDescricao] = useState("")
-    const [valor, setValor] = useState("")
 
     async function buscarEsteira() {
         const res = await fetch("/api/esteira")
@@ -35,16 +31,6 @@ export default function EsteiraPage() {
         }
         const data = await res.json()
         setLancamentos(data)
-    }
-
-    async function buscarClassificacoes() {
-        const res = await fetch("/api/classificacoes")
-        if (!res.ok) {
-            console.error("Erro ao buscar classificações:", res.statusText);
-            return;
-        }
-        const data = await res.json()
-        setClassificacoes(data)
     }
 
     async function enviarClassificacao() {
@@ -66,7 +52,6 @@ export default function EsteiraPage() {
 
     useEffect(() => {
         buscarEsteira()
-        buscarClassificacoes()
     }, [])
 
     const limparSelecao = () => {
@@ -122,22 +107,10 @@ export default function EsteiraPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label>Classificação</Label>
-                                                <Select value={classificacao} onValueChange={setClassificacao} >
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Selecione" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-
-                                                        {classificacoes.length ? classificacoes.map(c => (
-                                                            <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-                                                        )) : (
-                                                            <SelectItem value="0" disabled>Nenhuma classificação disponível...</SelectItem>
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                            <SelectClassificacao
+                                                value={classificacao}
+                                                onChange={setClassificacao}
+                                            />
                                             <div className="flex items-center gap-2">
                                                 <Checkbox id="recorrente" checked={recorrente} onCheckedChange={() => setRecorrente(!recorrente)} />
                                                 <Label htmlFor="recorrente">Recorrente</Label>

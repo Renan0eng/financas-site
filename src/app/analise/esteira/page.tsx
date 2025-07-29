@@ -39,11 +39,18 @@ export default function AnaliseEsteira() {
                     <div key={nome} className="rounded-xl border p-4 shadow">
                         <h2 className="text-lg font-semibold">{nome}</h2>
                         {/* se for negativo vermelho e se positivo verde */}
-                        <p className={`font-bold ${total < 0 ? "text-red-600" : "text-green-600"}`}>
+                        <p className={`font-bold text-end ${total < 0 ? "text-red-600" : "text-green-600"}`}>
                             R$ {total.toFixed(2)}
                         </p>
                     </div>
                 ))}
+                <div key='qtd-nao-classificado' className="rounded-xl border p-4 shadow">
+                    <h2 className="text-lg font-semibold">Qtd não classificado</h2>
+                    {/* se for negativo vermelho e se positivo verde */}
+                    <p className={`font-bold text-end text-red-600`}>
+                        {dados.filter(e => !e.lancamento?.classificacao).length}
+                    </p>
+                </div>
             </div>
 
             <div className="mt-8">

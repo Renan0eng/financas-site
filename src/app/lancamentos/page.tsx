@@ -16,21 +16,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Prisma } from "@prisma/client"
 import { List, MoreVertical, Upload } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-type Esteira = {
-    id: string
-    data: string
-    valor: number
-    descricao: string
-    origem: string
-}
+type LancamentoWithClassificacao = Prisma.LancamentoGetPayload<{
+  include: { classificacao: true }
+}>
 
 export default function Home() {
-    const [esteira, setEsteira] = useState<Esteira[]>([])
-    const [selecionado, setSelecionado] = useState<Esteira | null>(null)
+    const [esteira, setEsteira] = useState<LancamentoWithClassificacao[]>([])
+    const [selecionado, setSelecionado] = useState<LancamentoWithClassificacao | null>(null)
     const [open, setOpen] = useState(false)
 
     const buscarEsteira = async () => {
@@ -46,7 +43,7 @@ export default function Home() {
     const salvarEdicao = async () => {
         if (!selecionado) return
 
-        await fetch(`/api/esteira/${selecionado.id}`, {
+        await fetch(`/api/lancamento/${selecionado.id}`, {
             method: "PUT",
             body: JSON.stringify({
                 descricao: selecionado.descricao,
@@ -78,7 +75,7 @@ export default function Home() {
                 <Card key={l.id}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0">
                         <CardTitle className="text- font-medium">
-                            {new Date(l.data).toLocaleDateString("pt-BR")} - {l.origem}
+                            {l.classificacao?.nome} - {l.origem}
                         </CardTitle>
 
                         <div className="flex items-center gap-4">
@@ -104,7 +101,7 @@ export default function Home() {
                                     <DropdownMenuItem
                                         onClick={() => {
                                             if (window.confirm("Deseja excluir este lançamento?")) {
-                                                fetch(`/api/esteira/${l.id}`, { method: "DELETE" }).then(buscarEsteira)
+                                                fetch(`/api/lancamento/${l.id}`, { method: "DELETE" }).then(buscarEsteira)
                                             }
                                         }}
                                         className="text-red-600"
@@ -116,9 +113,12 @@ export default function Home() {
                         </div>
                     </CardHeader>
 
-                    <CardContent>
+                    <CardContent className="flex flex-col space-y-2">
                         <p className="text-muted-foreground">{l.descricao}</p>
-                    </CardContent>
+                        <p className="text-muted-foreground">
+                            {new Date(l.data).toLocaleDateString("pt-BR")}
+                        </p>
+                    </CardContent> 
                 </Card>
             ))}
 

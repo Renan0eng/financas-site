@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     data: string
     valor: number
     descricao: string
+    idBanco: string
   }[]
 
   console.log(`Importando ${esteira.length} lançamentos...`);
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
       valor: l.valor,
       descricao: l.descricao,
       origem: "nubank",
+      idBanco: l.idBanco,
     })),
     skipDuplicates: true,
   })

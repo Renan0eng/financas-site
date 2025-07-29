@@ -29,6 +29,7 @@ export default function HomePage() {
             data: row["Data"],
             valor: parseFloat(row["Valor"]),
             descricao: row["Descrição"],
+            idBanco: row["Identificador"]
           }))
 
         const res = await fetch("/api/importar", {

@@ -15,6 +15,7 @@ datasource db {
 
 model Esteira {
   id           String     @id @default(uuid())
+  idBanco      String     @unique
   data         DateTime
   valor        Float
   descricao    String
@@ -27,6 +28,7 @@ model Esteira {
 
 model Lancamento {
   id          String   @id @default(uuid())
+  idBanco      String     @unique
   data        DateTime
   valor       Float
   descricao   String

@@ -50,11 +50,19 @@ const data = {
         },
         {
           title: "Esteira",
-          url: "/esteira",
+          url: "/esteira/v2",
         },
         {
           title: "Lançamentos",
-          url: "/lancamentos",
+          url: "/lancamentos/v2",
+        },
+        {
+          title: "Análise da Esteira",
+          url: "/analise/esteira",
+        },
+        {
+          title: "Análise da Lançamento",
+          url: "/analise/lancamento",
         },
       ],
     },

@@ -4,9 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { data, valor, descricao, origem, recorrente,classificacao, warn, warnDesc, id } = body
-
-        console.log("body:", body);
+        const { data, valor, descricao, origem, recorrente,classificacao, warn, warnDesc, id, idBanco } = body
 
         const lancamento = await prisma.lancamento.create({
             data: {
@@ -14,6 +12,7 @@ export async function POST(req: Request) {
                 valor,
                 descricao,
                 origem,
+                idBanco,
                 classificacaoId: classificacao,
                 recorrente: recorrente || false,
                 destaque: warn || false,
@@ -46,22 +45,4 @@ export async function GET() {
   })
 
   return NextResponse.json(lancamentos)
-}
-
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
-  await prisma.lancamento.delete({ where: { id: params.id } })
-  return NextResponse.json({ ok: true })
-}
-
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const body = await req.json()
-  await prisma.lancamento.update({
-    where: { id: params.id },
-    data: {
-      descricao: body.descricao,
-      valor: body.valor,
-      origem: body.origem
-    }
-  })
-  return NextResponse.json({ ok: true })
 }
