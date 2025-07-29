@@ -32,11 +32,15 @@ const chartConfig: ChartConfig = {
         label: "Gastos",
         color: "var(--color-red-500)",
     },
+    patrimonio: {
+        label: "Patrimônio",
+        color: "var(--color-blue-500)",
+    },
 }
 
 type Props = {
     titulo: string
-    data: { dia: string; receitas: number; gastos: number }[]
+    data: { dia: string; receitas: number; gastos: number; patrimonio: number }[]
 }
 
 export function ChartGastosReceitas({ titulo, data }: Props) {
@@ -75,6 +79,13 @@ export function ChartGastosReceitas({ titulo, data }: Props) {
                             dataKey="gastos"
                             type="monotone"
                             stroke="var(--color-red-500)"
+                            strokeWidth={2}
+                            dot={false}
+                        />
+                        <Line
+                            dataKey="patrimonio"
+                            type="monotone"
+                            stroke="var(--color-blue-500)"
                             strokeWidth={2}
                             dot={false}
                         />

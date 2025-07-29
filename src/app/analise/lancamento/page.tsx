@@ -25,72 +25,38 @@ export default function AnaliseEsteira() {
         const dataInicio = new Date()
         dataInicio.setDate(hoje.getDate() - diasTotal)
 
-        const mapa: Record<string, { dia: string; receitas: number; gastos: number }> = {}
+        const mapa: Record<string, { dia: string; receitas: number; gastos: number; patrimonio: number }> = {}
 
-        // Preenche todos os dias no intervalo com 0
+        // Preenche todos os dias com 0
         for (let i = 0; i <= diasTotal; i++) {
             const d = new Date(dataInicio)
             d.setDate(d.getDate() + i)
             const dia = d.toISOString().split("T")[0]
-            mapa[dia] = { dia, receitas: 0, gastos: 0 }
+            mapa[dia] = { dia, receitas: 0, gastos: 0, patrimonio: 0 }
         }
 
-        // Soma os dados reais
-        for (const item of dados) {
-            const dataItem = new Date(item.data)
-            if (dataItem < dataInicio || dataItem > hoje) continue
+        let patrimonioTotal = 0
 
-            const dia = dataItem.toISOString().split("T")[0]
-            if (!mapa[dia]) continue
+        for (const dia in mapa) {
+            const transacoesNoDia = dados.filter(d => {
+                const dataItem = new Date(d.data)
+                return dataItem.toISOString().split("T")[0] === dia
+            })
 
-            if (item.valor >= 0) {
-                mapa[dia].receitas += item.valor
-            } else {
-                mapa[dia].gastos += Math.abs(item.valor)
+            for (const item of transacoesNoDia) {
+                patrimonioTotal += item.valor
+                if (item.valor >= 0) {
+                    mapa[dia].receitas += item.valor
+                } else {
+                    mapa[dia].gastos += Math.abs(item.valor)
+                }
             }
+
+            mapa[dia].patrimonio = patrimonioTotal
         }
 
         return Object.values(mapa)
     }, [dados, meses])
-
-    const dadosTransformadosAgregados = useMemo(() => {
-        const hoje = new Date()
-        const diasTotal = meses * 30
-        const dataInicio = new Date()
-        dataInicio.setDate(hoje.getDate() - diasTotal)
-
-        const mapa: Record<string, { dia: string; receitas: number; gastos: number }> = {}
-
-        // Preenche todos os dias no intervalo com 0
-        for (let i = 0; i <= diasTotal; i++) {
-            const d = new Date(dataInicio)
-            d.setDate(d.getDate() + i)
-            const dia = d.toISOString().split("T")[0]
-            mapa[dia] = { dia, receitas: 0, gastos: 0 }
-        }
-
-        // Agrega os dados por dia
-        const acumulado: { dia: string; receitas: number; gastos: number; saldo: number }[] = []
-        let receitasAcum = 0
-        let gastosAcum = 0
-
-        // Soma os dados reais
-        for (const item of dados) {
-            const dataItem = new Date(item.data)
-            if (dataItem < dataInicio || dataItem > hoje) continue
-
-            const dia = dataItem.toISOString().split("T")[0]
-            if (!mapa[dia]) continue
-
-            if (item.valor >= 0) {
-                mapa[dia].receitas += item.valor
-            } else {
-                mapa[dia].gastos += Math.abs(item.valor)
-            }
-        }
-
-        return Object.values(mapa)
-    }, [dadosTransformados])
 
 
     const getData = async () => {
@@ -206,10 +172,6 @@ export default function AnaliseEsteira() {
                 <ChartGastosReceitas
                     titulo="Gastos e Receitas"
                     data={dadosTransformados}
-                />
-                <ChartGastosReceitas
-                    titulo="Gastos e Receitas Acumulados"
-                    data={dadosTransformadosAgregados}
                 />
             </div>
         </div>
